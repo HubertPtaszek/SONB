@@ -72,34 +72,22 @@ namespace SONB
                 switch (Console.ReadLine())
                 {
                     case "1":
-                        Console.Clear();
-                        Console.WriteLine("podaj wagę:");
-                        w1 = Convert.ToInt32(Console.ReadLine());
+                        w1 = SetWeight();
                         break;
                     case "2":
-                        Console.Clear();
-                        Console.WriteLine("podaj wagę:");
-                        w2 = Convert.ToInt32(Console.ReadLine());
+                        w2 = SetWeight();
                         break;
                     case "3":
-                        Console.Clear();
-                        Console.WriteLine("podaj wagę:");
-                        w3 = Convert.ToInt32(Console.ReadLine());
+                        w3 = SetWeight();
                         break;
                     case "4":
-                        Console.Clear();
-                        Console.WriteLine("podaj wagę:");
-                        w4 = Convert.ToInt32(Console.ReadLine());
+                        w4 = SetWeight();
                         break;
                     case "5":
-                        Console.Clear();
-                        Console.WriteLine("podaj wagę:");
-                        w5 = Convert.ToInt32(Console.ReadLine());
+                        w5 = SetWeight();
                         break;
                     case "6":
-                        Console.Clear();
-                        Console.WriteLine("podaj wagę:");
-                        w6 = Convert.ToInt32(Console.ReadLine());
+                        w6 = SetWeight();
                         break;
                     case "7":
                         showMenu =  false;
@@ -173,8 +161,24 @@ namespace SONB
             Console.WriteLine("Naciśnij enter aby powrócić do menu");
             Console.ReadLine();
         }
+        public int SetWeight()
+        {
+            Console.Clear();
+            Console.WriteLine("podaj wagę:");
+            int number = Convert.ToInt32(Console.ReadLine());
 
-
+            while (!BetweenRanges(1, 10, number))
+            {
+                Console.Clear();
+                Console.WriteLine("Bład, wpisz ponownie liczbe");
+                number = Convert.ToInt32(Console.ReadLine());
+            }
+            return number;
+        }
+        public bool BetweenRanges(int a, int b, int number)
+        {
+            return (a <= number && number <= b);
+        }
         public DateTime GetDateTime()
         {
             return DateTime.Now;
