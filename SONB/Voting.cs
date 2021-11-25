@@ -164,7 +164,7 @@ namespace SONB
         public int SetWeight()
         {
             Console.Clear();
-            Console.WriteLine("podaj wagę:");
+            Console.WriteLine("podaj wagę (od 1 do 10):");
             int number = Convert.ToInt32(Console.ReadLine());
 
             while (!BetweenRanges(1, 10, number))
