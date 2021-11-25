@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 
@@ -7,20 +8,44 @@ namespace SONB
 {
     class Voting
     {
-        DateTime? t1 = null;
-        DateTime? t2 = null;
-        DateTime? t3 = null;
-        DateTime? t4 = null;
-        DateTime? t5 = null;
-        DateTime? t6 = null;
 
-        int w1 = 1;
-        int w2 = 1;
-        int w3 = 1;
-        int w4 = 1;
-        int w5 = 1;
-        int w6 = 1;
+        Server s1 = new Server() { 
+            Time = null,
+            Weight = 1
+        };
+        Server s2 = new Server()
+        {
+            Time = null,
+            Weight = 1
+        };
+        Server s3 = new Server()
+        {
+            Time = null,
+            Weight = 1
+        };
+        Server s4 = new Server()
+        {
+            Time = null,
+            Weight = 1
+        };
+        Server s5 = new Server()
+        {
+            Time = null,
+            Weight = 1
+        };
+        Server s6 = new Server()
+        {
+            Time = null,
+            Weight = 1
+        };
 
+
+
+
+
+        Dictionary<int, List<Server>> groups = new Dictionary<int, List<Server>>();
+
+        string epsilon = "2";
         public bool MainMenu()
         {
             Console.Clear();
@@ -29,7 +54,11 @@ namespace SONB
             Console.WriteLine("2) Ustaw wagi");
             Console.WriteLine("3) wyswietl czasy z serwerów");
             Console.WriteLine("4) wyswietl wagi serwerów");
-            Console.WriteLine("5) wyście");
+            Console.WriteLine("5) ustaw epsilon");
+            Console.WriteLine("6) podziel na grupy i wyświetl");
+            Console.WriteLine("7) głosowanie");
+            Console.WriteLine("8) wyście");
+
             Console.Write("\r\nwybierz opcję: ");
 
             switch (Console.ReadLine())
@@ -47,6 +76,15 @@ namespace SONB
                     WriteWeights();
                     return true;
                 case "5":
+                    epsilon = SetEpsilon();
+                    return true;
+                case "6":
+                    GroupTimes();
+                    return true;
+                case "7":
+                    VotingMethod();
+                    return true;
+                case "8":
                     return false;
                 default:
                     return true;
@@ -72,22 +110,22 @@ namespace SONB
                 switch (Console.ReadLine())
                 {
                     case "1":
-                        w1 = SetWeight();
+                        s1.Weight = SetWeight();
                         break;
                     case "2":
-                        w2 = SetWeight();
+                        s2.Weight = SetWeight();
                         break;
                     case "3":
-                        w3 = SetWeight();
+                        s3.Weight = SetWeight();
                         break;
                     case "4":
-                        w4 = SetWeight();
+                        s4.Weight = SetWeight();
                         break;
                     case "5":
-                        w5 = SetWeight();
+                        s5.Weight = SetWeight();
                         break;
                     case "6":
-                        w6 = SetWeight();
+                        s6.Weight = SetWeight();
                         break;
                     case "7":
                         showMenu =  false;
@@ -101,30 +139,30 @@ namespace SONB
         private void GetTime()
         {
             Console.Clear();
-            Thread thread1 = new Thread(() => { t1 = GetDateTime(); });
+            Thread thread1 = new Thread(() => { s1.Time = GetDateTime(); });
             thread1.Start();
             thread1.Join();
 
-            Thread thread2 = new Thread(() => { t2 = GetDateTime(); });
+            Thread thread2 = new Thread(() => { s2.Time = GetDateTime(); });
             thread2.Start();
             thread2.Join();
 
-            Thread thread3 = new Thread(() => { t3 = GetDateTime(); });
+            Thread thread3 = new Thread(() => { s3.Time = GetDateTime(); });
             thread3.Start();
             thread3.Join();
 
 
-            Thread thread4 = new Thread(() => { t4 = GetDateTime(); });
+            Thread thread4 = new Thread(() => { s4.Time = GetDateTime(); });
             thread4.Start();
             thread4.Join();
 
 
-            Thread thread5 = new Thread(() => { t5 = GetDateTime(); });
+            Thread thread5 = new Thread(() => { s5.Time = GetDateTime(); });
             thread5.Start();
             thread5.Join();
 
 
-            Thread thread6 = new Thread(() => { t6 = GetDateTime(); });
+            Thread thread6 = new Thread(() => { s6.Time = GetDateTime(); });
             thread6.Start();
             thread6.Join();
 
@@ -134,24 +172,24 @@ namespace SONB
         private void WriteTimes()
         {
             Console.Clear();
-            Console.WriteLine("Serwer 1 czas: " + ((DateTime)t1).TimeOfDay);
-            Console.WriteLine("Serwer 2 czas: " + ((DateTime)t2).TimeOfDay);
-            Console.WriteLine("Serwer 3 czas: " + ((DateTime)t3).TimeOfDay);
-            Console.WriteLine("Serwer 4 czas: " + ((DateTime)t4).TimeOfDay);
-            Console.WriteLine("Serwer 5 czas: " + ((DateTime)t5).TimeOfDay);
-            Console.WriteLine("Serwer 6 czas: " + ((DateTime)t6).TimeOfDay);
+            Console.WriteLine("Serwer 1 czas: " + ((DateTime)s1.Time).TimeOfDay);
+            Console.WriteLine("Serwer 2 czas: " + ((DateTime)s2.Time).TimeOfDay);
+            Console.WriteLine("Serwer 3 czas: " + ((DateTime)s3.Time).TimeOfDay);
+            Console.WriteLine("Serwer 4 czas: " + ((DateTime)s4.Time).TimeOfDay);
+            Console.WriteLine("Serwer 5 czas: " + ((DateTime)s5.Time).TimeOfDay);
+            Console.WriteLine("Serwer 6 czas: " + ((DateTime)s6.Time).TimeOfDay);
             Console.WriteLine("Naciśnij enter aby powrócić do menu");
             Console.ReadLine();
         }
         private void WriteWeights()
         {
             Console.Clear();
-            Console.WriteLine("Serwer 1 waga: " + w1);
-            Console.WriteLine("Serwer 2 waga: " + w2);
-            Console.WriteLine("Serwer 3 waga: " + w3);
-            Console.WriteLine("Serwer 4 waga: " + w4);
-            Console.WriteLine("Serwer 5 waga: " + w5);
-            Console.WriteLine("Serwer 6 waga: " + w6);
+            Console.WriteLine("Serwer 1 waga: " + s1.Weight);
+            Console.WriteLine("Serwer 2 waga: " + s1.Weight);
+            Console.WriteLine("Serwer 3 waga: " + s1.Weight);
+            Console.WriteLine("Serwer 4 waga: " + s1.Weight);
+            Console.WriteLine("Serwer 5 waga: " + s1.Weight);
+            Console.WriteLine("Serwer 6 waga: " + s1.Weight);
             Console.WriteLine("Naciśnij enter aby powrócić do menu");
             Console.ReadLine();
         }
@@ -165,13 +203,12 @@ namespace SONB
         {
             Console.Clear();
             Console.WriteLine("podaj wagę (od 1 do 10):");
-            int number = Convert.ToInt32(Console.ReadLine());
+            int number; 
 
-            while (!BetweenRanges(1, 10, number))
+            while (!int.TryParse(Console.ReadLine(),out number) || !BetweenRanges(1, 10, number))
             {
                 Console.Clear();
                 Console.WriteLine("Bład, wpisz ponownie liczbe");
-                number = Convert.ToInt32(Console.ReadLine());
             }
             return number;
         }
@@ -182,6 +219,64 @@ namespace SONB
         public DateTime GetDateTime()
         {
             return DateTime.Now;
+        }
+        public string SetEpsilon()
+        {
+            Console.Clear();
+            Console.WriteLine("podaj epsilon");
+            int number;
+            string numberString = Console.ReadLine();
+            while (!int.TryParse(numberString, out number))
+            {
+                Console.Clear();
+                Console.WriteLine("Bład, wpisz ponownie liczbe");
+                numberString = Console.ReadLine();
+            }
+            return numberString;
+            
+        }
+        public void  GroupTimes()
+        {
+            List<Server> servers = new List<Server>();
+            servers.Add(s1);
+            servers.Add(s2);
+            servers.Add(s3);
+            servers.Add(s4);
+            servers.Add(s5);
+            servers.Add(s6);
+            string[] formats = { "s\\.f", "s\\.ff", "s\\.fff", "s\\.ffff",
+                    "s\\.fffff", "s\\.ffffff", "s\\.fffffff", "s\\.ffffffff"};
+            TimeSpan interval;
+            TimeSpan.TryParseExact("0." + epsilon, formats, null, out interval);
+
+            int inumerator = 1;
+            foreach (Server server in servers) {
+                List<Server> group = servers.Where(x => x.Time.Value.TimeOfDay >= server.Time.Value.TimeOfDay + interval || x.Time.Value.TimeOfDay <= server.Time.Value.TimeOfDay - interval).ToList();
+                groups.Add(inumerator, group);
+                inumerator++;
+            }
+
+        }
+        public int VotingMethod()
+        {
+            Console.Clear();
+            Console.WriteLine("podaj wagę (od 1 do 10):");
+            int number = Convert.ToInt32(Console.ReadLine());
+
+            while (!BetweenRanges(1, 10, number))
+            {
+                Console.Clear();
+                Console.WriteLine("Bład, wpisz ponownie liczbe");
+                number = Convert.ToInt32(Console.ReadLine());
+            }
+            return number;
+        }
+
+
+        internal class Server
+        {
+            public DateTime? Time { get; set; }
+            public int Weight { get; set; }
         }
     }
 }
