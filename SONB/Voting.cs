@@ -10,40 +10,43 @@ namespace SONB
     {
 
         Server s1 = new Server() { 
+            Name = "S1",
             Time = null,
             Weight = 1
         };
         Server s2 = new Server()
         {
+            Name = "S2",
             Time = null,
             Weight = 1
         };
         Server s3 = new Server()
         {
+            Name = "S3",
             Time = null,
             Weight = 1
         };
         Server s4 = new Server()
         {
+            Name = "S4",
             Time = null,
             Weight = 1
         };
         Server s5 = new Server()
         {
+            Name = "S5",
             Time = null,
             Weight = 1
         };
         Server s6 = new Server()
         {
+            Name = "S6",
             Time = null,
             Weight = 1
         };
 
 
-
-
-
-        Dictionary<int, List<Server>> groups = new Dictionary<int, List<Server>>();
+        HashSet<ServerList<Server>> groups = new HashSet<ServerList<Server>>(new ServerListComparer());
 
         string epsilon = "2";
         public bool MainMenu()
@@ -246,7 +249,7 @@ namespace SONB
         }
         public void  GroupTimes()
         {
-            List<Server> servers = new List<Server>();
+            ServerList<Server> servers = new ServerList<Server>();
             servers.Add(s1);
             servers.Add(s2);
             servers.Add(s3);
@@ -257,48 +260,16 @@ namespace SONB
                     "s\\.fffff", "s\\.ffffff", "s\\.fffffff", "s\\.ffffffff"};
             TimeSpan interval;
             TimeSpan.TryParseExact("0." + epsilon, formats, null, out interval);
-            groups = new Dictionary<int, List<Server>>();
-            int inumerator = 1;
+            groups = new HashSet<ServerList<Server>>(new ServerListComparer());
+
             foreach (Server server in servers) {
                 TimeSpan time = server.Time.Value.TimeOfDay + interval;
                 TimeSpan time2 = server.Time.Value.TimeOfDay - interval;
                 List<Server> group = servers.Where(x => x.Time.Value.TimeOfDay >= time2 && x.Time.Value.TimeOfDay <= time).ToList();
-                groups.Add(inumerator, group);
-                inumerator++;
+                ServerList<Server> group2 = new ServerList<Server>(group);
+                groups.Add(group2);
             }
-            HashSet<int> keysToDelete = new HashSet<int>();
-            foreach (KeyValuePair<int, List<Server>> item in groups)
-            {
-                List<TimeSpan> times1 = new List<TimeSpan>();
-                Console.WriteLine($"Grupa {item.Key}: ");
-                foreach (Server server in item.Value)
-                {
-                    times1.Add(server.Time.Value.TimeOfDay);
-                }
-                foreach (KeyValuePair<int, List<Server>> item2 in groups)
-                {
-                    if (item.Key != item2.Key)
-                    {
-                        List<TimeSpan> times2 = new List<TimeSpan>();
-                        foreach (Server server2 in item2.Value)
-                        {
-                            times2.Add(server2.Time.Value.TimeOfDay);
-                        }
-                        var set = new HashSet<TimeSpan>(times1);
-                        var equals = set.SetEquals(times2);
-                        if (equals)
-                        {
-                            keysToDelete.Add(item.Key);
-                        }
-                    }
-                    
-                }
-            }
-
-            foreach (int item in keysToDelete)
-            {
-                groups.Remove(item);
-            }
+            
             Console.Clear();
             Console.WriteLine("pogrupowano");
             Console.ReadLine();
@@ -306,10 +277,10 @@ namespace SONB
         public void WriteGroupsTimes()
         {
             Console.Clear();
-            foreach (KeyValuePair<int, List<Server>> item in groups)
+            foreach ( List<Server> item in groups)
             {
                 Console.WriteLine("Grupa: ");
-                foreach (Server server in item.Value)
+                foreach (Server server in item)
                 {
                     Console.WriteLine(server.Time.Value.TimeOfDay);
                 }
@@ -331,13 +302,6 @@ namespace SONB
                 number = Convert.ToInt32(Console.ReadLine());
             }
             return number;
-        }
-
-
-        internal class Server
-        {
-            public DateTime? Time { get; set; }
-            public int Weight { get; set; }
         }
     }
 }
