@@ -55,9 +55,10 @@ namespace SONB
             Console.WriteLine("3) wyswietl czasy z serwerów");
             Console.WriteLine("4) wyswietl wagi serwerów");
             Console.WriteLine("5) ustaw epsilon");
-            Console.WriteLine("6) podziel na grupy i wyświetl");
-            Console.WriteLine("7) głosowanie");
-            Console.WriteLine("8) wyście");
+            Console.WriteLine("6) podziel na grupy");
+            Console.WriteLine("7) wyświetl grupy");
+            Console.WriteLine("8) głosowanie");
+            Console.WriteLine("9) wyście");
 
             Console.Write("\r\nwybierz opcję: ");
 
@@ -82,9 +83,12 @@ namespace SONB
                     GroupTimes();
                     return true;
                 case "7":
-                    VotingMethod();
+                    WriteGroupsTimes();
                     return true;
                 case "8":
+                    VotingMethod();
+                    return true;
+                case "9":
                     return false;
                 default:
                     return true;
@@ -218,6 +222,11 @@ namespace SONB
         }
         public DateTime GetDateTime()
         {
+
+            TimeSpan interval;
+            TimeSpan.TryParseExact("0.01", "s\\.ff", null, out interval);
+            Thread.Sleep(interval);
+            Console.WriteLine("pobieram czas");
             return DateTime.Now;
         }
         public string SetEpsilon()
@@ -248,14 +257,66 @@ namespace SONB
                     "s\\.fffff", "s\\.ffffff", "s\\.fffffff", "s\\.ffffffff"};
             TimeSpan interval;
             TimeSpan.TryParseExact("0." + epsilon, formats, null, out interval);
-
+            groups = new Dictionary<int, List<Server>>();
             int inumerator = 1;
             foreach (Server server in servers) {
-                List<Server> group = servers.Where(x => x.Time.Value.TimeOfDay >= server.Time.Value.TimeOfDay + interval || x.Time.Value.TimeOfDay <= server.Time.Value.TimeOfDay - interval).ToList();
+                TimeSpan time = server.Time.Value.TimeOfDay + interval;
+                TimeSpan time2 = server.Time.Value.TimeOfDay - interval;
+                List<Server> group = servers.Where(x => x.Time.Value.TimeOfDay >= time2 && x.Time.Value.TimeOfDay <= time).ToList();
                 groups.Add(inumerator, group);
                 inumerator++;
             }
+            HashSet<int> keysToDelete = new HashSet<int>();
+            foreach (KeyValuePair<int, List<Server>> item in groups)
+            {
+                List<TimeSpan> times1 = new List<TimeSpan>();
+                Console.WriteLine($"Grupa {item.Key}: ");
+                foreach (Server server in item.Value)
+                {
+                    times1.Add(server.Time.Value.TimeOfDay);
+                }
+                foreach (KeyValuePair<int, List<Server>> item2 in groups)
+                {
+                    if (item.Key != item2.Key)
+                    {
+                        List<TimeSpan> times2 = new List<TimeSpan>();
+                        foreach (Server server2 in item2.Value)
+                        {
+                            times2.Add(server2.Time.Value.TimeOfDay);
+                        }
+                        var set = new HashSet<TimeSpan>(times1);
+                        var equals = set.SetEquals(times2);
+                        if (equals)
+                        {
+                            keysToDelete.Add(item.Key);
+                        }
+                    }
+                    
+                }
+            }
 
+            foreach (int item in keysToDelete)
+            {
+                groups.Remove(item);
+            }
+            Console.Clear();
+            Console.WriteLine("pogrupowano");
+            Console.ReadLine();
+        }
+        public void WriteGroupsTimes()
+        {
+            Console.Clear();
+            foreach (KeyValuePair<int, List<Server>> item in groups)
+            {
+                Console.WriteLine("Grupa: ");
+                foreach (Server server in item.Value)
+                {
+                    Console.WriteLine(server.Time.Value.TimeOfDay);
+                }
+            }
+
+            Console.WriteLine("Naciśnij enter aby powrócić do menu");
+            Console.ReadLine();
         }
         public int VotingMethod()
         {
