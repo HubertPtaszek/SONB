@@ -46,7 +46,7 @@ namespace SONB
         };
 
 
-        HashSet<ServerList<Server>> groups = new HashSet<ServerList<Server>>(new ServerListComparer());
+        Dictionary<int ,ServerList<Server>> groups = new Dictionary<int, ServerList<Server>>();
 
         string epsilon = "2";
         public bool MainMenu()
@@ -192,11 +192,11 @@ namespace SONB
         {
             Console.Clear();
             Console.WriteLine("Serwer 1 waga: " + s1.Weight);
-            Console.WriteLine("Serwer 2 waga: " + s1.Weight);
-            Console.WriteLine("Serwer 3 waga: " + s1.Weight);
-            Console.WriteLine("Serwer 4 waga: " + s1.Weight);
-            Console.WriteLine("Serwer 5 waga: " + s1.Weight);
-            Console.WriteLine("Serwer 6 waga: " + s1.Weight);
+            Console.WriteLine("Serwer 2 waga: " + s2.Weight);
+            Console.WriteLine("Serwer 3 waga: " + s3.Weight);
+            Console.WriteLine("Serwer 4 waga: " + s4.Weight);
+            Console.WriteLine("Serwer 5 waga: " + s5.Weight);
+            Console.WriteLine("Serwer 6 waga: " + s6.Weight);
             Console.WriteLine("Naciśnij enter aby powrócić do menu");
             Console.ReadLine();
         }
@@ -260,16 +260,23 @@ namespace SONB
                     "s\\.fffff", "s\\.ffffff", "s\\.fffffff", "s\\.ffffffff"};
             TimeSpan interval;
             TimeSpan.TryParseExact("0." + epsilon, formats, null, out interval);
-            groups = new HashSet<ServerList<Server>>(new ServerListComparer());
+            groups = new Dictionary<int, ServerList<Server>>();
+            HashSet<ServerList<Server>> groupsLocal = new HashSet<ServerList<Server>>(new ServerListComparer());
+
 
             foreach (Server server in servers) {
                 TimeSpan time = server.Time.Value.TimeOfDay + interval;
                 TimeSpan time2 = server.Time.Value.TimeOfDay - interval;
                 List<Server> group = servers.Where(x => x.Time.Value.TimeOfDay >= time2 && x.Time.Value.TimeOfDay <= time).ToList();
                 ServerList<Server> group2 = new ServerList<Server>(group);
-                groups.Add(group2);
+                groupsLocal.Add(group2);
             }
-            
+            int iterator = 1;
+            foreach(ServerList<Server> item in groupsLocal)
+            {
+                groups.Add(iterator, item);
+                iterator++;
+            }
             Console.Clear();
             Console.WriteLine("pogrupowano");
             Console.ReadLine();
@@ -277,10 +284,10 @@ namespace SONB
         public void WriteGroupsTimes()
         {
             Console.Clear();
-            foreach ( List<Server> item in groups)
+            foreach ( KeyValuePair<int, ServerList<Server>> item in groups)
             {
-                Console.WriteLine("Grupa: ");
-                foreach (Server server in item)
+                Console.WriteLine($"Grupa {item.Key}: ");
+                foreach (Server server in item.Value)
                 {
                     Console.WriteLine(server.Time.Value.TimeOfDay);
                 }
@@ -289,19 +296,85 @@ namespace SONB
             Console.WriteLine("Naciśnij enter aby powrócić do menu");
             Console.ReadLine();
         }
-        public int VotingMethod()
+        public void VotingMethod()
         {
-            Console.Clear();
-            Console.WriteLine("podaj wagę (od 1 do 10):");
-            int number = Convert.ToInt32(Console.ReadLine());
-
-            while (!BetweenRanges(1, 10, number))
+            Dictionary<int, int> bestGroup = new Dictionary<int, int>();
+            int maxSupport = 0;
+            List<TimeSpan> times = new List<TimeSpan>();
+            foreach (KeyValuePair<int, ServerList<Server>> item in groups)
             {
-                Console.Clear();
-                Console.WriteLine("Bład, wpisz ponownie liczbe");
-                number = Convert.ToInt32(Console.ReadLine());
+                int localMaxSupport = item.Value.Sum(x => x.Weight);
+                if(localMaxSupport > maxSupport)
+                {
+                    maxSupport = localMaxSupport;
+                    bestGroup = new Dictionary<int, int>();
+                    bestGroup.Add(item.Key, maxSupport);
+                }
+                else if (localMaxSupport == maxSupport)
+                {
+                    bestGroup.Add(item.Key, maxSupport);
+                }
             }
-            return number;
+            if (bestGroup.Count == 1)
+            {
+                ServerList<Server> serverTimes = groups.GetValueOrDefault(bestGroup.FirstOrDefault().Key);
+                foreach(Server server in serverTimes)
+                {
+                    for(int i = 0; i < server.Weight; i++)
+                    {
+                        times.Add(server.Time.Value.TimeOfDay);
+                    }
+                }
+
+                double doubleAverageTicks = times.Average(timeSpan => timeSpan.Ticks);
+                long longAverageTicks = Convert.ToInt64(doubleAverageTicks);
+
+                TimeSpan time = new TimeSpan(longAverageTicks);
+                Console.Clear();
+                Console.WriteLine($"aktualny czas: {time}");
+                Console.ReadLine();
+            }
+            else if (bestGroup.Count > 1)
+            {
+                double maxAvgSupport = 0;
+                Dictionary<int, ServerList<Server>> groupsLocal = new Dictionary<int, ServerList<Server>>();
+                List<int> maxAvgSupportList = new List<int>();
+                foreach(KeyValuePair<int, int> item in bestGroup)
+                {
+                    groupsLocal.Add(item.Key, groups.GetValueOrDefault(item.Key));
+                }
+
+                foreach (KeyValuePair<int, ServerList<Server>> item in groupsLocal)
+                {
+                    double localAvgMaxSupport = item.Value.Average(x => x.Weight);
+                    if (localAvgMaxSupport > maxAvgSupport)
+                    {
+                        maxAvgSupport = localAvgMaxSupport;
+                        maxAvgSupportList.Add(item.Key);
+                    }
+                    else if (localAvgMaxSupport == maxAvgSupport)
+                    {
+                        maxAvgSupportList.Add(item.Key);
+
+                    }
+                }
+                ServerList<Server> serverTimes = groups.GetValueOrDefault(maxAvgSupportList.FirstOrDefault());
+                foreach (Server server in serverTimes)
+                {
+                    for (int i = 0; i < server.Weight; i++)
+                    {
+                        times.Add(server.Time.Value.TimeOfDay);
+                    }
+                }
+
+                double doubleAverageTicks = times.Average(timeSpan => timeSpan.Ticks);
+                long longAverageTicks = Convert.ToInt64(doubleAverageTicks);
+
+                TimeSpan time = new TimeSpan(longAverageTicks);
+                Console.Clear();
+                Console.WriteLine($"aktualny czas: {time}");
+                Console.ReadLine();
+            }           
         }
     }
 }
