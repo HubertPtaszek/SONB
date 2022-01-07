@@ -6,39 +6,39 @@ using System.Threading;
 
 namespace SONB
 {
-    class Voting
+    public class Voting
     {
 
-        Server s1 = new Server() { 
+        public Server s1 = new Server() { 
             Name = "S1",
             Time = null,
             Weight = 1
         };
-        Server s2 = new Server()
+        public Server s2 = new Server()
         {
             Name = "S2",
             Time = null,
             Weight = 1
         };
-        Server s3 = new Server()
+        public Server s3 = new Server()
         {
             Name = "S3",
             Time = null,
             Weight = 1
         };
-        Server s4 = new Server()
+        public Server s4 = new Server()
         {
             Name = "S4",
             Time = null,
             Weight = 1
         };
-        Server s5 = new Server()
+        public Server s5 = new Server()
         {
             Name = "S5",
             Time = null,
             Weight = 1
         };
-        Server s6 = new Server()
+        public Server s6 = new Server()
         {
             Name = "S6",
             Time = null,
@@ -46,9 +46,9 @@ namespace SONB
         };
 
 
-        Dictionary<int ,ServerList<Server>> groups = new Dictionary<int, ServerList<Server>>();
+        public Dictionary<int ,ServerList<Server>> groups = new Dictionary<int, ServerList<Server>>();
 
-        string epsilon = "2";
+        public string epsilon = "2";
         public bool MainMenu()
         {
             Console.Clear();
@@ -84,12 +84,18 @@ namespace SONB
                     return true;
                 case "6":
                     GroupTimes();
+                    Console.Clear();
+                    Console.WriteLine("pogrupowano");
+                    Console.ReadLine();
                     return true;
                 case "7":
                     WriteGroupsTimes();
                     return true;
                 case "8":
-                    VotingMethod();
+                    DateTime? time = VotingMethod();
+                    Console.Clear();
+                    Console.WriteLine($"aktualny czas: {time.Value.TimeOfDay}");
+                    Console.ReadLine();
                     return true;
                 case "9":
                     return false;
@@ -277,9 +283,7 @@ namespace SONB
                 groups.Add(iterator, item);
                 iterator++;
             }
-            Console.Clear();
-            Console.WriteLine("pogrupowano");
-            Console.ReadLine();
+            
         }
         public void WriteGroupsTimes()
         {
@@ -296,8 +300,9 @@ namespace SONB
             Console.WriteLine("Naciśnij enter aby powrócić do menu");
             Console.ReadLine();
         }
-        public void VotingMethod()
+        public DateTime? VotingMethod()
         {
+            DateTime? time = null;
             Dictionary<int, int> bestGroup = new Dictionary<int, int>();
             int maxSupport = 0;
             List<TimeSpan> times = new List<TimeSpan>();
@@ -329,10 +334,7 @@ namespace SONB
                 double doubleAverageTicks = times.Average(timeSpan => timeSpan.Ticks);
                 long longAverageTicks = Convert.ToInt64(doubleAverageTicks);
 
-                TimeSpan time = new TimeSpan(longAverageTicks);
-                Console.Clear();
-                Console.WriteLine($"aktualny czas: {time}");
-                Console.ReadLine();
+                time = new DateTime(longAverageTicks);
             }
             else if (bestGroup.Count > 1)
             {
@@ -370,11 +372,9 @@ namespace SONB
                 double doubleAverageTicks = times.Average(timeSpan => timeSpan.Ticks);
                 long longAverageTicks = Convert.ToInt64(doubleAverageTicks);
 
-                TimeSpan time = new TimeSpan(longAverageTicks);
-                Console.Clear();
-                Console.WriteLine($"aktualny czas: {time}");
-                Console.ReadLine();
-            }           
+                time = new DateTime(longAverageTicks);
+            }
+            return time;
         }
     }
 }
