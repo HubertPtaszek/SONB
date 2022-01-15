@@ -1,54 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace SONB
 {
-    public class Voting
+    internal class Voting
     {
-
-        public Server s1 = new Server() { 
+        private Server s1 = new Server()
+        {
             Name = "S1",
             Time = null,
             Weight = 1
         };
-        public Server s2 = new Server()
+
+        private Server s2 = new Server()
         {
             Name = "S2",
             Time = null,
             Weight = 1
         };
-        public Server s3 = new Server()
+
+        private Server s3 = new Server()
         {
             Name = "S3",
             Time = null,
             Weight = 1
         };
-        public Server s4 = new Server()
+
+        private Server s4 = new Server()
         {
             Name = "S4",
             Time = null,
             Weight = 1
         };
-        public Server s5 = new Server()
+
+        private Server s5 = new Server()
         {
             Name = "S5",
             Time = null,
             Weight = 1
         };
-        public Server s6 = new Server()
+
+        private Server s6 = new Server()
         {
             Name = "S6",
             Time = null,
             Weight = 1
         };
 
+        private Dictionary<int, ServerList<Server>> groups = new Dictionary<int, ServerList<Server>>();
 
-        public Dictionary<int ,ServerList<Server>> groups = new Dictionary<int, ServerList<Server>>();
+        private string epsilon = "2";
 
-        public string epsilon = "2";
         public bool MainMenu()
         {
             Console.Clear();
@@ -61,7 +65,8 @@ namespace SONB
             Console.WriteLine("6) podziel na grupy");
             Console.WriteLine("7) wyświetl grupy");
             Console.WriteLine("8) głosowanie");
-            Console.WriteLine("9) wyście");
+            Console.WriteLine("9) błedy");
+            Console.WriteLine("10) wyście");
 
             Console.Write("\r\nwybierz opcję: ");
 
@@ -70,35 +75,42 @@ namespace SONB
                 case "1":
                     GetTime();
                     return true;
+
                 case "2":
                     SetWeights();
                     return true;
+
                 case "3":
                     WriteTimes();
                     return true;
+
                 case "4":
                     WriteWeights();
                     return true;
+
                 case "5":
                     epsilon = SetEpsilon();
                     return true;
+
                 case "6":
                     GroupTimes();
-                    Console.Clear();
-                    Console.WriteLine("pogrupowano");
-                    Console.ReadLine();
                     return true;
+
                 case "7":
                     WriteGroupsTimes();
                     return true;
+
                 case "8":
-                    DateTime? time = VotingMethod();
-                    Console.Clear();
-                    Console.WriteLine($"aktualny czas: {time.Value.TimeOfDay}");
-                    Console.ReadLine();
+                    VotingMethod();
                     return true;
+
                 case "9":
+                    InsertErrors();
+                    return true;
+
+                case "10":
                     return false;
+
                 default:
                     return true;
             }
@@ -125,28 +137,72 @@ namespace SONB
                     case "1":
                         s1.Weight = SetWeight();
                         break;
+
                     case "2":
                         s2.Weight = SetWeight();
                         break;
+
                     case "3":
                         s3.Weight = SetWeight();
                         break;
+
                     case "4":
                         s4.Weight = SetWeight();
                         break;
+
                     case "5":
                         s5.Weight = SetWeight();
                         break;
+
                     case "6":
                         s6.Weight = SetWeight();
                         break;
+
                     case "7":
-                        showMenu =  false;
+                        showMenu = false;
                         break;
+
                     default:
                         break;
                 }
-            }  
+            }
+        }
+
+        private void InsertErrors()
+        {
+            bool showMenu = true;
+            while (showMenu)
+            {
+                Console.Clear();
+                Console.WriteLine("wybierz błąd:");
+                Console.WriteLine("1) serwer nie odpowiada");
+                Console.WriteLine("2) Serwer zwraca pustą godzinę");
+                Console.WriteLine("3) Serwer ma niepoprawną wagę");
+                Console.WriteLine("4) wróć");
+                Console.Write("\r\nwybierz opcję: ");
+
+                switch (Console.ReadLine())
+                {
+                    case "1":
+                        s1 = null;
+                        break;
+
+                    case "2":
+                        s2.Time = null;
+                        break;
+
+                    case "3":
+                        s3.Weight = SetBadWeight();
+                        break;
+
+                    case "4":
+                        showMenu = false;
+                        break;
+
+                    default:
+                        break;
+                }
+            }
         }
 
         private void GetTime()
@@ -164,16 +220,13 @@ namespace SONB
             thread3.Start();
             thread3.Join();
 
-
             Thread thread4 = new Thread(() => { s4.Time = GetDateTime(); });
             thread4.Start();
             thread4.Join();
 
-
             Thread thread5 = new Thread(() => { s5.Time = GetDateTime(); });
             thread5.Start();
             thread5.Join();
-
 
             Thread thread6 = new Thread(() => { s6.Time = GetDateTime(); });
             thread6.Start();
@@ -194,6 +247,7 @@ namespace SONB
             Console.WriteLine("Naciśnij enter aby powrócić do menu");
             Console.ReadLine();
         }
+
         private void WriteWeights()
         {
             Console.Clear();
@@ -206,38 +260,56 @@ namespace SONB
             Console.WriteLine("Naciśnij enter aby powrócić do menu");
             Console.ReadLine();
         }
+
         private void DisplayResult(string message)
         {
             Console.WriteLine($"{message}");
             Console.WriteLine("Naciśnij enter aby powrócić do menu");
             Console.ReadLine();
         }
+
         public int SetWeight()
         {
             Console.Clear();
             Console.WriteLine("podaj wagę (od 1 do 10):");
-            int number; 
+            int number;
 
-            while (!int.TryParse(Console.ReadLine(),out number) || !BetweenRanges(1, 10, number))
+            while (!int.TryParse(Console.ReadLine(), out number) || !BetweenRanges(1, 10, number))
             {
                 Console.Clear();
                 Console.WriteLine("Bład, wpisz ponownie liczbe");
             }
             return number;
         }
+
+        public int SetBadWeight()
+        {
+            Console.Clear();
+            Console.WriteLine("podaj błędną wagę");
+            int number;
+
+            while (!int.TryParse(Console.ReadLine(), out number))
+            {
+                Console.Clear();
+                Console.WriteLine("Bład, wpisz ponownie liczbe");
+            }
+            return number;
+        }
+
         public bool BetweenRanges(int a, int b, int number)
         {
             return (a <= number && number <= b);
         }
+
         public DateTime GetDateTime()
         {
-
             TimeSpan interval;
             TimeSpan.TryParseExact("0.01", "s\\.ff", null, out interval);
             Thread.Sleep(interval);
             Console.WriteLine("pobieram czas");
             return DateTime.Now;
         }
+
         public string SetEpsilon()
         {
             Console.Clear();
@@ -251,17 +323,23 @@ namespace SONB
                 numberString = Console.ReadLine();
             }
             return numberString;
-            
         }
-        public void  GroupTimes()
+
+        public void GroupTimes()
         {
             ServerList<Server> servers = new ServerList<Server>();
-            servers.Add(s1);
-            servers.Add(s2);
-            servers.Add(s3);
-            servers.Add(s4);
-            servers.Add(s5);
-            servers.Add(s6);
+            if (s1 != null)
+                servers.Add(s1);
+            if (s2 != null)
+                servers.Add(s2);
+            if (s3 != null)
+                servers.Add(s3);
+            if (s4 != null)
+                servers.Add(s4);
+            if (s5 != null)
+                servers.Add(s5);
+            if (s6 != null)
+                servers.Add(s6);
             string[] formats = { "s\\.f", "s\\.ff", "s\\.fff", "s\\.ffff",
                     "s\\.fffff", "s\\.ffffff", "s\\.fffffff", "s\\.ffffffff"};
             TimeSpan interval;
@@ -269,26 +347,32 @@ namespace SONB
             groups = new Dictionary<int, ServerList<Server>>();
             HashSet<ServerList<Server>> groupsLocal = new HashSet<ServerList<Server>>(new ServerListComparer());
 
-
-            foreach (Server server in servers) {
-                TimeSpan time = server.Time.Value.TimeOfDay + interval;
-                TimeSpan time2 = server.Time.Value.TimeOfDay - interval;
-                List<Server> group = servers.Where(x => x.Time.Value.TimeOfDay >= time2 && x.Time.Value.TimeOfDay <= time).ToList();
-                ServerList<Server> group2 = new ServerList<Server>(group);
-                groupsLocal.Add(group2);
+            foreach (Server server in servers)
+            {
+                if (server.Time != null)
+                {
+                    TimeSpan time = server.Time.Value.TimeOfDay + interval;
+                    TimeSpan time2 = server.Time.Value.TimeOfDay - interval;
+                    List<Server> group = servers.Where(x => x.Time != null && x.Time.Value.TimeOfDay >= time2 && x.Time.Value.TimeOfDay <= time).ToList();
+                    ServerList<Server> group2 = new ServerList<Server>(group);
+                    groupsLocal.Add(group2);
+                }
             }
             int iterator = 1;
-            foreach(ServerList<Server> item in groupsLocal)
+            foreach (ServerList<Server> item in groupsLocal)
             {
                 groups.Add(iterator, item);
                 iterator++;
             }
-            
+            Console.Clear();
+            Console.WriteLine("pogrupowano");
+            Console.ReadLine();
         }
+
         public void WriteGroupsTimes()
         {
             Console.Clear();
-            foreach ( KeyValuePair<int, ServerList<Server>> item in groups)
+            foreach (KeyValuePair<int, ServerList<Server>> item in groups)
             {
                 Console.WriteLine($"Grupa {item.Key}: ");
                 foreach (Server server in item.Value)
@@ -300,16 +384,16 @@ namespace SONB
             Console.WriteLine("Naciśnij enter aby powrócić do menu");
             Console.ReadLine();
         }
-        public DateTime? VotingMethod()
+
+        public void VotingMethod()
         {
-            DateTime? time = null;
             Dictionary<int, int> bestGroup = new Dictionary<int, int>();
             int maxSupport = 0;
             List<TimeSpan> times = new List<TimeSpan>();
             foreach (KeyValuePair<int, ServerList<Server>> item in groups)
             {
-                int localMaxSupport = item.Value.Sum(x => x.Weight);
-                if(localMaxSupport > maxSupport)
+                int localMaxSupport = item.Value.Where(c => BetweenRanges(1, 10, c.Weight)).Sum(x => x.Weight);
+                if (localMaxSupport > maxSupport)
                 {
                     maxSupport = localMaxSupport;
                     bestGroup = new Dictionary<int, int>();
@@ -323,9 +407,9 @@ namespace SONB
             if (bestGroup.Count == 1)
             {
                 ServerList<Server> serverTimes = groups.GetValueOrDefault(bestGroup.FirstOrDefault().Key);
-                foreach(Server server in serverTimes)
+                foreach (Server server in serverTimes)
                 {
-                    for(int i = 0; i < server.Weight; i++)
+                    for (int i = 0; i < server.Weight; i++)
                     {
                         times.Add(server.Time.Value.TimeOfDay);
                     }
@@ -334,14 +418,17 @@ namespace SONB
                 double doubleAverageTicks = times.Average(timeSpan => timeSpan.Ticks);
                 long longAverageTicks = Convert.ToInt64(doubleAverageTicks);
 
-                time = new DateTime(longAverageTicks);
+                TimeSpan time = new TimeSpan(longAverageTicks);
+                Console.Clear();
+                Console.WriteLine($"aktualny czas: {time}");
+                Console.ReadLine();
             }
             else if (bestGroup.Count > 1)
             {
                 double maxAvgSupport = 0;
                 Dictionary<int, ServerList<Server>> groupsLocal = new Dictionary<int, ServerList<Server>>();
                 List<int> maxAvgSupportList = new List<int>();
-                foreach(KeyValuePair<int, int> item in bestGroup)
+                foreach (KeyValuePair<int, int> item in bestGroup)
                 {
                     groupsLocal.Add(item.Key, groups.GetValueOrDefault(item.Key));
                 }
@@ -357,7 +444,6 @@ namespace SONB
                     else if (localAvgMaxSupport == maxAvgSupport)
                     {
                         maxAvgSupportList.Add(item.Key);
-
                     }
                 }
                 ServerList<Server> serverTimes = groups.GetValueOrDefault(maxAvgSupportList.FirstOrDefault());
@@ -372,9 +458,11 @@ namespace SONB
                 double doubleAverageTicks = times.Average(timeSpan => timeSpan.Ticks);
                 long longAverageTicks = Convert.ToInt64(doubleAverageTicks);
 
-                time = new DateTime(longAverageTicks);
+                TimeSpan time = new TimeSpan(longAverageTicks);
+                Console.Clear();
+                Console.WriteLine($"aktualny czas: {time}");
+                Console.ReadLine();
             }
-            return time;
         }
     }
 }
