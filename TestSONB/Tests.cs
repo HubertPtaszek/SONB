@@ -7,13 +7,7 @@ namespace TestSONB
 {
     public class Tests
     {
-        [Fact]
-        public void GroupTimes_GroupsShouldThrowExeption()
-        {
-            var votingService = new Voting();
 
-            Assert.Throws<InvalidOperationException>(() => votingService.GroupTimes());
-        }
 
         [Fact]
         public void GroupTimes_GroupsShouldBe1()
