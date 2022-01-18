@@ -45,7 +45,7 @@ namespace WpfApp
         }
         private void Button5Clicked(object sender, RoutedEventArgs e)
         {
-            SubWindow subWindow = new SubWindow(voting);
+            SubWindow subWindow = new SubWindow(voting, this);
             subWindow.Show();
         }
 
