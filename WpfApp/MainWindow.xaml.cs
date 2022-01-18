@@ -42,11 +42,15 @@ namespace WpfApp
         {
             SubWindow2 subWindow2 = new SubWindow2(voting);
             subWindow2.Show();
+            result.Content = "";
+
         }
         private void Button5Clicked(object sender, RoutedEventArgs e)
         {
             SubWindow subWindow = new SubWindow(voting, this);
             subWindow.Show();
+            result.Content = "";
+
         }
 
         private void button1_Click(object sender, RoutedEventArgs e)
@@ -58,6 +62,8 @@ namespace WpfApp
             s4Time.Content = ((DateTime)voting.s4.Time).TimeOfDay;
             s5Time.Content = ((DateTime)voting.s5.Time).TimeOfDay;
             s6Time.Content = ((DateTime)voting.s6.Time).TimeOfDay;
+            result.Content = "";
+
         }
 
         private void PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -69,37 +75,50 @@ namespace WpfApp
         private void epsilon_TextChanged(object sender, TextChangedEventArgs e)
         {
             voting.epsilon = ((TextBox)sender).Text;
+            result.Content = "";
+
         }
 
 
         private void s1Weight_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             voting.s1.Weight = (int)((IntegerUpDown)sender).Value;
+            result.Content = "";
+
         }
 
         private void s2Weight_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             voting.s2.Weight = (int)((IntegerUpDown)sender).Value;
+            result.Content = "";
+
         }
 
         private void s3Weight_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             voting.s3.Weight = (int)((IntegerUpDown)sender).Value;
+            result.Content = "";
+
         }
 
         private void s4Weight_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             voting.s4.Weight = (int)((IntegerUpDown)sender).Value;
+            result.Content = "";
+
         }
 
         private void s5Weight_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             voting.s5.Weight = (int)((IntegerUpDown)sender).Value;
+            result.Content = "";
+
         }
 
         private void s6Weight_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             voting.s6.Weight = (int)((IntegerUpDown)sender).Value;
+            result.Content = "";
         }
 
         private void button2_Click(object sender, RoutedEventArgs e)
