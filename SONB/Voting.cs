@@ -73,7 +73,9 @@ namespace SONB
             switch (Console.ReadLine())
             {
                 case "1":
+                    Console.Clear();
                     GetTime();
+                    DisplayResult("Pobrano");
                     return true;
 
                 case "2":
@@ -211,9 +213,9 @@ namespace SONB
             }
         }
 
-        private void GetTime()
+        public void GetTime()
         {
-            Console.Clear();
+            
             Thread thread1 = new Thread(() => { s1.Time = GetDateTime(); });
             thread1.Start();
             thread1.Join();
@@ -238,7 +240,7 @@ namespace SONB
             thread6.Start();
             thread6.Join();
 
-            DisplayResult("Pobrano");
+            
         }
 
         private void WriteTimes()
